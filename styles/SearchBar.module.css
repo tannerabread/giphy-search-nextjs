@@ -1,0 +1,33 @@
+.searchContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.searchBar {
+  width: 100%;
+  background-color: #ededed;
+  color: #000000;
+  border: 2px solid #0000cc;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.searchBar:focus {
+  outline: none;
+  box-shadow: 0 0 10px #0000cc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .searchBar {
+    background-color: #121212;
+    color: #00ccff;
+    border: none;
+  }
+
+  .searchBar:focus {
+    box-shadow: 0 0 10px #00ccff;
+  }
+}
