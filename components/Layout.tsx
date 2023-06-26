@@ -1,8 +1,10 @@
 import { ReactNode } from "react";
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import styles from "@/styles/Layout.module.css";
+
 import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
+import styles from "@/styles/Layout.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,6 +13,10 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  function handleSearch(value: string) {
+    console.log("Searching for: ", value);
+  }
+
   return (
     <>
       <Head>
@@ -20,8 +26,10 @@ export default function Layout({ children }: LayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <Header />
-        {/* Search */}
+        <div className={styles.headersearch}>
+          <Header />
+          <SearchBar onSearch={handleSearch} />
+        </div>
         {children}
       </main>
     </>

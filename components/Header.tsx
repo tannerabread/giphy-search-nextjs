@@ -24,6 +24,7 @@ export default function Header() {
       <Image
         src="/giphy-logo.svg"
         alt="GIPHY Logo"
+        className={styles.logo}
         width={imageWidth || 440}
         height={imageHeight || 35}
         onLoadingComplete={handleImageLoad}
