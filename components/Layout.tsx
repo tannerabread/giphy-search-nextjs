@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Head from "next/head";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/router";
 
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
@@ -13,8 +14,15 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const router = useRouter();
+
   function handleSearch(value: string) {
     console.log("Searching for: ", value);
+    if (!value) {
+      router.push("/");
+    } else {
+      router.push(`/search?q=${encodeURIComponent(value)}`);
+    }
   }
 
   return (
@@ -30,9 +38,7 @@ export default function Layout({ children }: LayoutProps) {
           <Header />
           <SearchBar onSearch={handleSearch} />
         </div>
-        <div className={styles.gifs}>
-          {children}
-        </div>
+        <div className={styles.gifs}>{children}</div>
       </main>
     </>
   );

@@ -8,11 +8,11 @@ export type Gif = {
   url: string;
 };
 
-type Error = {
+export type Error = {
   error: string;
 };
 
-type GiphyApiResponse = {
+export type GiphyApiResponse = {
   id: string;
   title: string;
   images: {
