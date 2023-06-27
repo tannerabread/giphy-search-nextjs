@@ -1,7 +1,7 @@
 // Home page - shows 3 random gifs
 import { useState, useEffect } from "react";
 import { Gif } from "./api/random";
-import Display from "../components/Display";
+import Display from "@/components/Display";
 
 export default function Home() {
   const [gifs, setGifs] = useState<Gif[]>([]);
