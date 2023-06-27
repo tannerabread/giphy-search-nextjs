@@ -30,7 +30,9 @@ export default function Layout({ children }: LayoutProps) {
           <Header />
           <SearchBar onSearch={handleSearch} />
         </div>
-        {children}
+        <div className={styles.gifs}>
+          {children}
+        </div>
       </main>
     </>
   );
