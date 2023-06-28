@@ -1,27 +1,120 @@
 .gifContainer {
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 90vw;
+  margin: 1rem;
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  margin: 1rem;
-  padding: 1rem;
   background-color: rgb(237, 237, 237);
-  /* border: 1px solid #00ff99; */
   border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: all 0.2s ease-in-out;
   filter: drop-shadow(2px 2px 5px #232524);
+  height: fit-content;
+  margin: 0.3rem;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(2px 2px 8px #232524);
+  z-index: 10;
+}
+
+.card video {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.card button:hover {
+  background-color: rgb(80, 82, 94);
 }
 
 @media (prefers-color-scheme: dark) {
   .card {
     background-color: rgb(59, 61, 73);
-    border: 1px solid #00ff99;
-    filter: drop-shadow(2px 2px 5px #00ff9995);
   }
+}
+
+.copyButton {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  border: none;
+  background-color: rgba(0, 204, 255, 0);
+  color: white;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.copyButton:hover {
+  background-color: rgba(0, 204, 255, 0.99);
+  transition: background-color 0.4s ease-in-out;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11;
+}
+
+.modalContent {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  width: fit-content;
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 12;
+}
+
+.modalCopyButton {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  height: 25px;
+  padding: 0 5px;
+  background-color: rgba(0, 204, 255, 0);
+  border: none;
+  cursor: pointer;
+  color: black;
+  text-decoration: underline;
+  z-index: 12;
+}
+
+.modalCopyButton:hover {
+  background-color: rgba(0, 204, 255, 0.99);
+  color: white;
+  transition: background-color 0.4s ease-in-out;
+}
+
+.toast {
+  position: absolute;
+  padding: 16px;
+  background-color: rgba(0, 204, 255, 0.5);
+  color: #ffffff;
+  border-radius: 8px;
+  z-index: 9999;
 }
