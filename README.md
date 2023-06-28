@@ -2,7 +2,23 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, set the environment variable for the Giphy API key in `.env` file:
+
+```env
+GIPHY_API_KEY=<your_key>
+```
+
+Then, install dependencies:
+
+```bash
+npm install
+# or
+yarn
+# or
+pnpm install
+```
+
+Finally, run the development server:
 
 ```bash
 npm run dev
@@ -21,6 +37,12 @@ search.ts
 
 ## Logo
 
-The logo took some finagling to get correct. I started with the SVG supplied on Giphy's home page to get the logo on the left, then typed in "H GIPHY SEARCH!" [into this tool](https://danmarshall.github.io/google-font-to-svg-path/) to get the paths for the rest of the letters while replacing the "H" with the logo path. I combined the logo and the new words with [this tool](https://yqnn.github.io/svg-path-editor/) and got the width/height from there. I then grouped the letters in pairs and matched the colors to the logo colors.
+The logo took some finagling to get correct. 
 
-I'm sure there is a much better/easier way to do this but the svg is pretty solid as it is.
+### Creating the SVG
+
+I started with the SVG supplied on Giphy's home page to get the logo on the left, then typed in "H GIPHY SEARCH!" [into this tool](https://danmarshall.github.io/google-font-to-svg-path/) to get the paths for the rest of the letters while replacing the "H" with the logo path. I combined the logo and the new words with [this tool](https://yqnn.github.io/svg-path-editor/) and got the width/height from there. I then grouped the letters in pairs and matched the colors to the logo colors.
+
+### Making it responsive
+
+Use [Aspect Ratio Boxes](https://css-tricks.com/aspect-ratio-boxes/) from Chris Coyier and "padding-bottom hack". Initialize the wrapper div to height: 0 and then using the padding-bottom equivalent to the image/SVGs aspect ratio to give the div a height proportional to its width.
