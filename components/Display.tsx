@@ -1,4 +1,4 @@
-import { MouseEvent, useState, useEffect } from "react";
+import { MouseEvent, useState, useEffect, useRef } from "react";
 
 import { Gif } from "../pages/api/random";
 import styles from "@/styles/Display.module.css";
@@ -19,6 +19,34 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
     message: "",
     position: { x: 0, y: 0 },
   });
+  const gifRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const gif = entry.target as HTMLDivElement;
+        if (entry.isIntersecting) {
+          gif.querySelector("video")?.play();
+        } else {
+          gif.querySelector("video")?.pause();
+        }
+      });
+    });
+
+    const current = gifRefs.current;
+
+    current.forEach((gifRef) => {
+      if (gifRef) observer.observe(gifRef);
+    });
+
+    return () => {
+      if (current) {
+        current.forEach((gifRef) => {
+          if (gifRef) observer.unobserve(gifRef);
+        });
+      }
+    };
+  }, [gifs]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -67,11 +95,12 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
 
   return (
     <div className={styles.gifContainer}>
-      {gifs.map((gif) => (
+      {gifs.map((gif, index) => (
         <div
           className={styles.card}
           key={gif.id}
           onClick={() => openModal(gif)}
+          ref={(el) => (gifRefs.current[index] = el)}
         >
           <video autoPlay loop muted width={200} height={200}>
             <source src={gif.preview} type="video/mp4" />
