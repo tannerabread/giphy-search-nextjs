@@ -3,52 +3,99 @@ import { useRouter } from "next/router";
 
 import { Gif } from "../api/random";
 import Display from "@/components/Display";
+import Loading from "@/components/Loading";
+import styles from "@/styles/search.module.css";
+
+interface SearchState {
+  gifs: Gif[];
+  offset: number;
+  term: string;
+}
+
+interface SearchStates {
+  [key: string]: SearchState;
+}
 
 export default function Search() {
-  // build search history in state and check for it before making a request
-  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [searchStates, setSearchStates] = useState<SearchStates>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [triggerFetch, setTriggerFetch] = useState<boolean>(false);
+
   const router = useRouter();
   const { q } = router.query;
-  const searchTerm = Array.isArray(q) ? q[0] : q || "";
 
   useEffect(() => {
-    if (searchTerm) {
+    if (q) {
+      const initialSearchTerm = Array.isArray(q) ? q[0] : q;
+      setSearchTerm(initialSearchTerm);
+      setLoading(true);
+      setTriggerFetch(true);
+    }
+  }, [q]);
+
+  useEffect(() => {
+    if (searchTerm && triggerFetch) {
       setLoading(true);
       fetchGifs();
+      setTriggerFetch(false);
     }
 
-    async function fetchGifs() {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(searchTerm)}`
-      );
-      const resGifs: Gif[] = await res.json();
-      console.log(resGifs);
-      setGifs(resGifs);
-      setLoading(false);
+    async function fetchGifs(): Promise<void> {
+      const offset = searchStates[searchTerm]?.offset || 0;
+
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(searchTerm)}&offset=${offset}`
+        );
+        if (!res.ok) {
+          console.error("Fetch failed: ", res);
+          return;
+        }
+        const resGifs: Gif[] = await res.json();
+
+        setSearchStates((states) => ({
+          ...states,
+          [searchTerm]: {
+            term: searchTerm,
+            offset: offset + 50,
+            gifs: states[searchTerm]
+              ? [...states[searchTerm].gifs, ...resGifs]
+              : resGifs,
+          },
+        }));
+      } catch (err) {
+        console.error("Fetch failed: ", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [searchTerm]);
+  }, [searchTerm, searchStates, triggerFetch]);
 
-  const loadingGifUrl =
-    "https://media0.giphy.com/media/FaAxdPWZ7HKGmlnku7/giphy.mp4?cid=0ea41a78kak8meeemtj118irlu8843sll1q9us2aa7bej8pu&ep=v1_gifs_search&rid=giphy.mp4&ct=g";
-  const loadingGif = [
-    {
-      id: "loading",
-      title: "Loading...",
-      preview: loadingGifUrl,
-      url: loadingGifUrl,
-    },
-  ];
+  function loadMore(): void {
+    const newState = { ...searchStates };
+    if (newState[searchTerm]) {
+      newState[searchTerm].offset += 50;
+    }
+    setSearchStates(newState);
+    setTriggerFetch(true);
+  }
 
-  return (
+  const gifs = searchStates[searchTerm]?.gifs || [];
+
+  return gifs && gifs.length > 0 ? (
     <>
-      {loading ? (
-        <Display gifs={loadingGif} />
-      ) : gifs && gifs.length > 0 ? (
-        <Display gifs={gifs} />
-      ) : (
-        <div>No results found for {searchTerm}</div>
-      )}
+      <Display gifs={gifs} />
+      <button className={styles.loadMoreButton} onClick={loadMore}>
+        Load More
+      </button>
     </>
+  ) : loading ? (
+    <Loading />
+  ) : (
+    <div className={styles.noResults}>
+      <h2>No Results Found</h2>
+      <p>Try searching for something else!</p>
+    </div>
   );
 }

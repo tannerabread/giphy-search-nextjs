@@ -13,11 +13,11 @@ export default async function handler(
     return;
   } else {
     const apiKey = process.env.GIPHY_API_KEY;
-    const { q } = req.query;
+    const { q, offset } = req.query;
     const searchTerm = Array.isArray(q) ? q[0] : q || "";
     const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(
       searchTerm
-    )}&limit=50&rating=&lang=en`;
+    )}&offset=${offset || 0}&limit=50&rating=&lang=en`;
 
     if (!apiKey) {
       res.status(500).json({ error: "Missing Giphy API key" });
@@ -38,9 +38,9 @@ export default async function handler(
 
       res.status(200).json(gifUrls);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: "Error fetching searched GIFs from Giphy API" });
+      res.status(500).json({
+        error: `Error fetching searched GIFs from Giphy API: ${error}`,
+      });
     }
   }
 }
