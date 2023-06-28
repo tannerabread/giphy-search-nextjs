@@ -22,16 +22,25 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
   const gifRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const gif = entry.target as HTMLDivElement;
-        if (entry.isIntersecting) {
-          gif.querySelector("video")?.play();
-        } else {
-          gif.querySelector("video")?.pause();
-        }
-      });
-    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const gif = entry.target as HTMLDivElement;
+          const video = gif.querySelector("video");
+          if (entry.isIntersecting) {
+            if (video) {
+              if (!video.src) {
+                video.src = video.dataset.src || "";
+              }
+              video.play();
+            }
+          } else {
+            if (video) video.pause();
+          }
+        });
+      },
+      { rootMargin: "500px" }
+    );
 
     const current = gifRefs.current;
 
@@ -102,8 +111,14 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
           onClick={() => openModal(gif)}
           ref={(el) => (gifRefs.current[index] = el)}
         >
-          <video autoPlay loop muted width={200} height={200}>
-            <source src={gif.preview} type="video/mp4" />
+          <video
+            autoPlay
+            loop
+            muted
+            width={200}
+            height={200}
+            data-src={gif.preview}
+          >
             Your browser does not support the video tag.
           </video>
           <button
