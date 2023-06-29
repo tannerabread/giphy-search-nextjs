@@ -51,6 +51,7 @@ export default function Search(): JSX.Element {
           "error",
           toastPosition
         );
+        return;
       }
       const resGifs: Gif[] = await res.json();
 

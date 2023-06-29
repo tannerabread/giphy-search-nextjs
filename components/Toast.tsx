@@ -1,9 +1,11 @@
 import styles from "@/styles/Toast.module.css";
 
+export type ToastTypeTypes = "success" | "error";
+
 export interface ToastType {
   active: boolean;
   message?: string;
-  type?: "success" | "error";
+  type?: ToastTypeTypes;
   position?: {
     x: number;
     y: number;
