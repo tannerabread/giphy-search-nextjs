@@ -24,7 +24,7 @@ export type GiphyApiResponse = {
   };
 };
 
-export async function fetchGifs(url: string): Promise<Gif[] | APIError> {
+export async function fetchGifs(url: URL): Promise<Gif[] | APIError> {
   const response = await fetch(url);
 
   if (response.status === 429) {

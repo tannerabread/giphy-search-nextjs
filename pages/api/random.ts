@@ -19,7 +19,12 @@ export default async function handler(
     return;
   }
 
-  const url = `https://api.giphy.com/v1/gifs/random?api_key=${apiKey}&tag=&rating=`;
+  const url = new URL("https://api.giphy.com/v1/gifs/random");
+  url.search = new URLSearchParams({
+    api_key: apiKey,
+    rating: '',
+    tag: '',
+  }).toString();
 
   try {
     const gifs = await Promise.all(

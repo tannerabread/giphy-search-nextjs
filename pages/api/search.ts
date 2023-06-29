@@ -14,16 +14,24 @@ export default async function handler(
   }
 
   const apiKey = process.env.GIPHY_API_KEY;
-  const { q, offset } = req.query;
-  const searchTerm = Array.isArray(q) ? q[0] : q || "";
-  const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(
-    searchTerm
-  )}&offset=${offset || 0}&limit=50&rating=&lang=en`;
-
   if (!apiKey) {
     res.status(500).json({ error: errors.missingGiphyApiKey });
     return;
   }
+  
+  const { q, offset } = req.query;
+  const searchTerm = Array.isArray(q) ? q[0] : q || "";
+  const offsetValue = Array.isArray(offset) ? offset[0] : offset || "0";
+  
+  const url = new URL("https://api.giphy.com/v1/gifs/search");
+  url.search = new URLSearchParams({
+    api_key: apiKey,
+    q: searchTerm,
+    offset: offsetValue,
+    limit: '50',
+    rating: '',
+    lang: 'en'
+  }).toString();
 
   try {
     const gifs = await fetchGifs(url);

@@ -2,13 +2,15 @@ import { MouseEvent } from "react";
 
 import styles from "@/styles/layout/CopyButton.module.css";
 
+interface CopyButtonProps {
+  url: string;
+  onCopy: (e: MouseEvent<HTMLButtonElement>, url: string) => void;
+}
+
 export default function CopyButton({
   url,
   onCopy,
-}: {
-  url: string;
-  onCopy: (e: MouseEvent<HTMLButtonElement>, url: string) => void;
-}): JSX.Element {
+}: CopyButtonProps): JSX.Element {
   return (
     <button
       className={styles.copyButton}
