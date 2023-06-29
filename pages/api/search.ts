@@ -1,45 +1,42 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Gif, Error, GiphyApiResponse } from "./random";
+import { Gif, APIError, fetchGifs } from "@/utils/giphy-api";
+import { errors } from "@/utils/messages";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Gif[] | Error>
+  res: NextApiResponse<Gif[] | APIError>
 ) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).end(errors.methodNotAllowed(req.method));
     return;
-  } else {
-    const apiKey = process.env.GIPHY_API_KEY;
-    const { q, offset } = req.query;
-    const searchTerm = Array.isArray(q) ? q[0] : q || "";
-    const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(
-      searchTerm
-    )}&offset=${offset || 0}&limit=50&rating=&lang=en`;
+  }
 
-    if (!apiKey) {
-      res.status(500).json({ error: "Missing Giphy API key" });
-      return;
-    }
+  const apiKey = process.env.GIPHY_API_KEY;
+  const { q, offset } = req.query;
+  const searchTerm = Array.isArray(q) ? q[0] : q || "";
+  const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(
+    searchTerm
+  )}&offset=${offset || 0}&limit=50&rating=&lang=en`;
 
-    try {
-      const respnose = await fetch(url);
-      const jsonResponse = await respnose.json();
-      const gifs = jsonResponse.data;
+  if (!apiKey) {
+    res.status(500).json({ error: errors.missingGiphyApiKey });
+    return;
+  }
 
-      const gifUrls: Gif[] = gifs.map((gif: GiphyApiResponse) => ({
-        id: gif.id,
-        title: gif.title,
-        preview: gif.images.preview.mp4,
-        url: gif.images.original.mp4,
-      }));
-
-      res.status(200).json(gifUrls);
-    } catch (error) {
+  try {
+    const gifs = await fetchGifs(url);
+    Array.isArray(gifs)
+      ? res.status(200).json(gifs)
+      : res.status(500).json(gifs);
+  } catch (error) {
+    console.log(error as Error);
+    if ((error as Error).message === errors.rateLimitExceeded) {
+      res.status(429).json({ error: errors.rateLimitMessage });
+    } else {
       res.status(500).json({
-        error: `Error fetching searched GIFs from Giphy API: ${error}`,
+        error: errors.searchTermError(searchTerm),
       });
     }
   }

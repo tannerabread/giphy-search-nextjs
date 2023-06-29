@@ -1,7 +1,8 @@
 import Image from "next/image";
-import styles from "@/styles/Header.module.css";
 
-export default function Header() {
+import styles from "@/styles/layout/Header.module.css";
+
+export default function Header(): JSX.Element {
   return (
     <div className={styles.container}>
       <div className={styles.imageWrapper}>

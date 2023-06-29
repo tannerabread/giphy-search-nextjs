@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, MouseEvent } from "react";
 import { useRouter } from "next/router";
 
-import { Gif } from "../api/random";
-import Display from "@/components/Display";
+import { useToast } from "@/hooks/useToast";
+import { Gif } from "@/utils/giphy-api";
+import { errors } from "@/utils/messages";
+
+import Display from "@/components/layout/Display";
 import Loading from "@/components/Loading";
+import Toast from "@/components/Toast";
+import NoGifsFound from "@/components/errors/NoGifsFound";
+
 import styles from "@/styles/search.module.css";
 
 interface SearchState {
@@ -16,63 +22,76 @@ interface SearchStates {
   [key: string]: SearchState;
 }
 
-export default function Search() {
+export default function Search(): JSX.Element {
   const [searchStates, setSearchStates] = useState<SearchStates>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [triggerFetch, setTriggerFetch] = useState<boolean>(false);
+  const [toastPosition, setToastPosition] = useState<{ x: number; y: number }>({
+    x: 50,
+    y: 50,
+  });
 
+  const { toast, showToast } = useToast();
   const router = useRouter();
   const { q } = router.query;
+
+  const fetchGifs = useCallback(async () => {
+    const offset = searchStates[searchTerm]?.offset || 0;
+
+    try {
+      const res = await fetch(
+        `/api/search?q=${encodeURIComponent(searchTerm)}&offset=${offset}`
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        console.log(data.error);
+        showToast(
+          data.error || errors.defaultServerError,
+          "error",
+          toastPosition
+        );
+      }
+      const resGifs: Gif[] = await res.json();
+
+      setSearchStates((states) => ({
+        ...states,
+        [searchTerm]: {
+          term: searchTerm,
+          offset: offset + 50,
+          gifs: states[searchTerm]
+            ? [...states[searchTerm].gifs, ...resGifs]
+            : resGifs,
+        },
+      }));
+    } catch (err) {
+      console.error(errors.fetchFailed(err as Error));
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, searchStates, showToast, toastPosition]);
 
   useEffect(() => {
     if (q) {
       const initialSearchTerm = Array.isArray(q) ? q[0] : q;
       setSearchTerm(initialSearchTerm);
-      setLoading(true);
       setTriggerFetch(true);
     }
   }, [q]);
 
   useEffect(() => {
     if (searchTerm && triggerFetch) {
-      setLoading(true);
+      if (!searchStates[searchTerm]) {
+        setLoading(true);
+      }
       fetchGifs();
+      setToastPosition({ x: 50, y: 50 });
       setTriggerFetch(false);
     }
+  }, [searchTerm, searchStates, triggerFetch, fetchGifs]);
 
-    async function fetchGifs(): Promise<void> {
-      const offset = searchStates[searchTerm]?.offset || 0;
-
-      try {
-        const res = await fetch(
-          `/api/search?q=${encodeURIComponent(searchTerm)}&offset=${offset}`
-        );
-        if (!res.ok) {
-          console.error("Fetch failed: ", res);
-          return;
-        }
-        const resGifs: Gif[] = await res.json();
-
-        setSearchStates((states) => ({
-          ...states,
-          [searchTerm]: {
-            term: searchTerm,
-            offset: offset + 50,
-            gifs: states[searchTerm]
-              ? [...states[searchTerm].gifs, ...resGifs]
-              : resGifs,
-          },
-        }));
-      } catch (err) {
-        console.error("Fetch failed: ", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, [searchTerm, searchStates, triggerFetch]);
-
-  function loadMore(): void {
+  function loadMore(e: MouseEvent<HTMLButtonElement>): void {
+    setToastPosition({ x: e.pageX - 100, y: e.pageY - 100 });
     const newState = { ...searchStates };
     if (newState[searchTerm]) {
       newState[searchTerm].offset += 50;
@@ -83,19 +102,20 @@ export default function Search() {
 
   const gifs = searchStates[searchTerm]?.gifs || [];
 
-  return gifs && gifs.length > 0 ? (
+  return loading ? (
+    <Loading />
+  ) : gifs.length > 0 ? (
     <>
       <Display gifs={gifs} />
       <button className={styles.loadMoreButton} onClick={loadMore}>
         Load More
       </button>
+      <Toast {...toast} />
     </>
-  ) : loading ? (
-    <Loading />
   ) : (
-    <div className={styles.noResults}>
-      <h2>No Results Found</h2>
-      <p>Try searching for something else!</p>
-    </div>
+    <>
+      <NoGifsFound />
+      <Toast {...toast} />
+    </>
   );
 }

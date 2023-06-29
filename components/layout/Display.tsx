@@ -1,24 +1,18 @@
 import { MouseEvent, useState, useEffect, useRef } from "react";
 
-import { Gif } from "../pages/api/random";
-import styles from "@/styles/Display.module.css";
+import { Gif } from "@/utils/giphy-api";
+import { success } from "@/utils/messages";
+import { useToast } from "@/hooks/useToast";
 
-interface Toast {
-  active: boolean;
-  message: string;
-  position: {
-    x: number;
-    y: number;
-  };
-}
+import Toast from "@/components/Toast";
+import Modal from "@/components/layout/Modal";
+import CopyButton from "@/components/layout/CopyButton";
 
-export default function Display({ gifs }: { gifs: Gif[] }) {
+import styles from "@/styles/layout/Display.module.css";
+
+export default function Display({ gifs }: { gifs: Gif[] }): JSX.Element {
   const [activeGif, setActiveGif] = useState<Gif | null>(null);
-  const [toast, setToast] = useState<Toast>({
-    active: false,
-    message: "",
-    position: { x: 0, y: 0 },
-  });
+  const { toast, showToast } = useToast();
   const gifRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -63,12 +57,9 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
         closeModal();
       }
     }
-
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   function openModal(gif: Gif): void {
@@ -82,22 +73,10 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
   function copyUrl(e: MouseEvent<HTMLButtonElement>, url: string): void {
     navigator.clipboard.writeText(url);
 
-    setToast({
-      active: true,
-      message: "URL Copied to Clipboard!",
-      position: {
-        x: e.pageX - 100,
-        y: e.pageY - 100,
-      },
-    });
-
-    setTimeout(
-      () =>
-        setToast({
-          active: false,
-          message: "",
-          position: { x: 0, y: 0 },
-        }),
+    showToast(
+      success.copiedToClipboard,
+      "success",
+      { x: e.pageX - 100, y: e.pageY - 100 },
       2000
     );
   }
@@ -121,52 +100,19 @@ export default function Display({ gifs }: { gifs: Gif[] }) {
           >
             Your browser does not support the video tag.
           </video>
-          <button
-            className={styles.copyButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              copyUrl(e, gif.url);
-            }}
-          >
-            Copy URL
-          </button>
+          <CopyButton url={gif.url} onCopy={copyUrl} />
         </div>
       ))}
 
       {activeGif && (
-        <div className={styles.modal} onClick={closeModal}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className={styles.modalCloseButton} onClick={closeModal}>
-              Close
-            </button>
-            <button
-              className={styles.modalCopyButton}
-              onClick={(e) => copyUrl(e, activeGif.url)}
-            >
-              Copy URL
-            </button>
-            <video autoPlay loop muted width={500} height={500}>
-              <source src={activeGif.url} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        </div>
+        <Modal
+          activeGif={activeGif}
+          closeModal={closeModal}
+          copyUrl={copyUrl}
+        />
       )}
 
-      {toast.active && (
-        <div
-          className={styles.toast}
-          style={{
-            top: `${toast.position.y}px`,
-            left: `${toast.position.x}px`,
-          }}
-        >
-          {toast.message}
-        </div>
-      )}
+      <Toast {...toast} />
     </div>
   );
 }
