@@ -1,0 +1,46 @@
+.gifContainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 90vw;
+  margin: 1rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(237, 237, 237);
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+  filter: drop-shadow(2px 2px 5px #232524);
+  height: fit-content;
+  margin: 0.3rem;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(2px 2px 8px #232524);
+  z-index: 10;
+}
+
+.card video {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.card button:hover {
+  background-color: rgb(80, 82, 94);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    background-color: rgb(59, 61, 73);
+  }
+}

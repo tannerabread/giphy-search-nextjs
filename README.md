@@ -35,6 +35,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 random.ts
 search.ts
 
+## Errors
+
+### Error Boundary
+
+This one was taken straight from the [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries/)
+
 ## Logo
 
 The logo took some finagling to get correct. 

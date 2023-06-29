@@ -1,23 +1,19 @@
 import { ReactNode } from "react";
 import Head from "next/head";
-import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
 
-import Header from "@/components/Header";
-import SearchBar from "@/components/SearchBar";
-import styles from "@/styles/Layout.module.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import Header from "@/components/layout/Header";
+import SearchBar from "@/components/layout/SearchBar";
+import styles from "@/styles/layout/Layout.module.css";
 
 interface LayoutProps {
   children?: ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps): JSX.Element {
   const router = useRouter();
 
   function handleSearch(value: string) {
-    console.log("Searching for: ", value);
     if (!value) {
       router.push("/");
     } else {
@@ -33,7 +29,7 @@ export default function Layout({ children }: LayoutProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}>
+      <main className={styles.main}>
         <div className={styles.headersearch}>
           <Header />
           <SearchBar onSearch={handleSearch} />

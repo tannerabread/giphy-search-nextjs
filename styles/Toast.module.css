@@ -1,0 +1,16 @@
+.toast {
+  position: absolute;
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 9999;
+}
+
+.success {
+  background-color: rgba(0, 204, 255, 0.5);
+  color: #ffffff;
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.9);
+  color: #ffffff;
+}
