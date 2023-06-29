@@ -3,13 +3,16 @@
   bottom: 10px;
   right: 10px;
   border: none;
-  background-color: rgba(0, 204, 255, 0);
+  border-radius: 5px;
+  padding: 5px;
+  background-color: rgba(46, 80, 88, 0.2);
   color: white;
   cursor: pointer;
-  text-decoration: underline;
+  transition: all 0.4s ease-in-out;
 }
 
 .copyButton:hover {
-  background-color: rgba(0, 204, 255, 0.99);
-  transition: background-color 0.4s ease-in-out;
+  background-color: rgba(46, 80, 88, 0.99);
+  font-size: 1rem;
+  font-weight: bold;
 }

@@ -25,6 +25,16 @@
   right: 10px;
   cursor: pointer;
   z-index: 12;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: rgba(88, 57, 46, 0.2);
+  color: white;
+}
+
+.modalCloseButton:hover {
+  background-color: rgba(88, 57, 46, 0.99);
+  transition: background-color 0.4s ease-in-out;
 }
 
 .modalCopyButton {
