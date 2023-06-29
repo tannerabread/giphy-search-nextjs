@@ -26,7 +26,7 @@ export default function Display({ gifs }: { gifs: Gif[] }): JSX.Element {
               if (!video.src) {
                 video.src = video.dataset.src || "";
               }
-              video.play();
+              video.play().catch((e) => console.error(e));
             }
           } else {
             if (video) video.pause();
