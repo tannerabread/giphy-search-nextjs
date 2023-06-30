@@ -1,9 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
 import Header from "@/components/layout/Header";
 import SearchBar from "@/components/layout/SearchBar";
+import SearchDropDown from "@/components/layout/SearchDropDown";
+import { useSearches } from "@/contexts/SearchContext";
+
 import styles from "@/styles/layout/Layout.module.css";
 
 interface LayoutProps {
@@ -12,11 +15,14 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps): JSX.Element {
   const router = useRouter();
+  const { addSearch, updateSelectedSearch } = useSearches();
 
   function handleSearch(value: string) {
+    updateSelectedSearch(value);
     if (!value) {
       router.push("/");
     } else {
+      addSearch(value);
       router.push(`/search?q=${encodeURIComponent(value)}`);
     }
   }
@@ -32,7 +38,10 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
       <main className={styles.main}>
         <div className={styles.headersearch}>
           <Header />
-          <SearchBar onSearch={handleSearch} />
+          <div className={styles.search}>
+            <SearchBar onSearch={handleSearch} />
+            <SearchDropDown onSearch={handleSearch} />
+          </div>
         </div>
         <div className={styles.gifs}>{children}</div>
       </main>

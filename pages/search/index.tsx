@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useToast } from "@/hooks/useToast";
 import { Gif } from "@/utils/giphy-api";
 import { errors } from "@/utils/messages";
+import { useSearches } from "@/contexts/SearchContext";
 
 import Display from "@/components/layout/Display";
 import Loading from "@/components/Loading";
@@ -12,21 +13,9 @@ import NoGifsFound from "@/components/errors/NoGifsFound";
 
 import styles from "@/styles/search.module.css";
 
-interface SearchState {
-  gifs: Gif[];
-  offset: number;
-  term: string;
-}
-
-interface SearchStates {
-  [key: string]: SearchState;
-}
-
 export default function Search(): JSX.Element {
-  const [searchStates, setSearchStates] = useState<SearchStates>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [triggerFetch, setTriggerFetch] = useState<boolean>(false);
   const [toastPosition, setToastPosition] = useState<{ x: number; y: number }>({
     x: 50,
     y: 50,
@@ -35,6 +24,8 @@ export default function Search(): JSX.Element {
   const { toast, showToast } = useToast();
   const router = useRouter();
   const { q } = router.query;
+  const { searchStates, updateSearchState, addSearch, updateSelectedSearch } =
+    useSearches();
 
   const fetchGifs = useCallback(async () => {
     const offset = searchStates[searchTerm]?.offset || 0;
@@ -55,50 +46,48 @@ export default function Search(): JSX.Element {
       }
       const resGifs: Gif[] = await res.json();
 
-      setSearchStates((states) => ({
-        ...states,
-        [searchTerm]: {
-          term: searchTerm,
-          offset: offset + 50,
-          gifs: states[searchTerm]
-            ? [...states[searchTerm].gifs, ...resGifs]
-            : resGifs,
-        },
-      }));
+      const newSearchState = {
+        term: searchTerm,
+        offset: offset + 50,
+        gifs: searchStates[searchTerm]
+          ? [...searchStates[searchTerm].gifs, ...resGifs]
+          : resGifs,
+      };
+      updateSearchState(searchTerm, newSearchState);
     } catch (err) {
       console.error(errors.fetchFailed(err as Error));
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, searchStates, showToast, toastPosition]);
+  }, [searchTerm, searchStates, showToast, toastPosition, updateSearchState]);
 
   useEffect(() => {
     if (q) {
       const initialSearchTerm = Array.isArray(q) ? q[0] : q;
       setSearchTerm(initialSearchTerm);
-      setTriggerFetch(true);
+      addSearch(initialSearchTerm);
+      updateSelectedSearch(initialSearchTerm);
     }
-  }, [q]);
+  }, [q, addSearch, updateSelectedSearch]);
 
   useEffect(() => {
-    if (searchTerm && triggerFetch) {
-      if (!searchStates[searchTerm]) {
-        setLoading(true);
-      }
+    if (
+      searchTerm &&
+      (!searchStates[searchTerm] || searchStates[searchTerm]?.gifs.length === 0)
+    ) {
+      setLoading(true);
       fetchGifs();
-      setToastPosition({ x: 50, y: 50 });
-      setTriggerFetch(false);
     }
-  }, [searchTerm, searchStates, triggerFetch, fetchGifs]);
+  }, [searchTerm, searchStates, fetchGifs]);
 
   function loadMore(e: MouseEvent<HTMLButtonElement>): void {
     setToastPosition({ x: e.pageX - 100, y: e.pageY - 100 });
-    const newState = { ...searchStates };
-    if (newState[searchTerm]) {
-      newState[searchTerm].offset += 50;
+    const newSearchState = { ...searchStates[searchTerm] };
+    if (newSearchState) {
+      newSearchState.offset += 50;
     }
-    setSearchStates(newState);
-    setTriggerFetch(true);
+    updateSearchState(searchTerm, newSearchState);
+    fetchGifs();
   }
 
   const gifs = searchStates[searchTerm]?.gifs || [];
