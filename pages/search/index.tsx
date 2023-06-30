@@ -11,7 +11,7 @@ import Loading from "@/components/Loading";
 import Toast from "@/components/Toast";
 import NoGifsFound from "@/components/errors/NoGifsFound";
 
-import styles from "@/styles/search.module.css";
+import styles from "@/styles/Search.module.css";
 
 export default function Search(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);

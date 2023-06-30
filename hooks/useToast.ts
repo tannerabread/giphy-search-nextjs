@@ -33,7 +33,11 @@ export function useToast() {
   );
 
   useEffect(() => {
-    
+    return () => {
+      if (toastTimeoutId.current) {
+        clearTimeout(toastTimeoutId.current);
+      }
+    };
   }, []);
 
   return { toast, showToast };

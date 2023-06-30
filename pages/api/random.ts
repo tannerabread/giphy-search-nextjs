@@ -20,11 +20,17 @@ export default async function handler(
   }
 
   const url = new URL("https://api.giphy.com/v1/gifs/random");
-  url.search = new URLSearchParams({
+  const params = {
     api_key: apiKey,
-    rating: '',
-    tag: '',
-  }).toString();
+    rating: "",
+    tag: "",
+  };
+  url.search = Object.entries(params)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+    )
+    .join("&");
 
   try {
     const gifs = await Promise.all(
@@ -35,13 +41,9 @@ export default async function handler(
     res.status(200).json(gifs.flat() as Gif[]);
   } catch (error) {
     if (error === errors.rateLimitExceeded) {
-      res
-        .status(429)
-        .json({ error: errors.rateLimitMessage });
+      res.status(429).json({ error: errors.rateLimitMessage });
     } else {
-      res
-        .status(500)
-        .json({ error: errors.errorFetchingRandomGifs });
+      res.status(500).json({ error: errors.errorFetchingRandomGifs });
     }
   }
 }

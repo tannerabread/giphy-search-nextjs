@@ -27,7 +27,6 @@ export type GiphyApiResponse = {
 export async function fetchGifs(url: URL): Promise<Gif[] | APIError> {
   const response = await fetch(url);
 
-  // if (response.status === 429 || true) {
   if (response.status === 429) {
     throw new Error(errors.rateLimitExceeded);
   } else if (!response.ok) {
