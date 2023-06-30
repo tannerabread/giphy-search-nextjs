@@ -56,7 +56,7 @@ The app has a simple interface to make it more enjoyable to work with.
 
 I chose this project structure because it seemed like the most future-proof if more features were added to this project.
 
-The only changes I thought about making with the current setup is moving the CSS modules to the same location as the components they are for. I only decided against it because there was already a styles folder with the `Home.module.css` file, best practices may have been to move the component CSS modules but I'm not sure.
+The only changes I thought about making with the current setup is moving the CSS modules to the same location as the components they are for. I only decided against it because there was already a styles folder with the `Home.module.css` file (which actually ended up getting deleted last minute from no-use), best practices may have been to move the component CSS modules but I'm not sure.
 
 ```
 ├── components
