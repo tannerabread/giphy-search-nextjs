@@ -3,7 +3,7 @@ import { MouseEvent } from "react";
 import styles from "@/styles/layout/CopyButton.module.css";
 
 interface CopyButtonProps {
-  isModal: boolean;
+  isModal?: boolean;
   url: string;
   onCopy: (e: MouseEvent<HTMLButtonElement>, url: string) => void;
 }
