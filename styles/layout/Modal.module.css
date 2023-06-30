@@ -17,6 +17,11 @@
   border-radius: 10px;
   padding: 20px;
   width: fit-content;
+  height: auto;
+}
+
+.modalContent video {
+  max-width: 100%;
 }
 
 .modalCloseButton {
@@ -37,22 +42,8 @@
   transition: background-color 0.4s ease-in-out;
 }
 
-.modalCopyButton {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  height: 25px;
-  padding: 0 5px;
-  background-color: rgba(0, 204, 255, 0);
-  border: none;
-  cursor: pointer;
-  color: black;
-  text-decoration: underline;
-  z-index: 12;
-}
-
-.modalCopyButton:hover {
-  background-color: rgba(0, 204, 255, 0.99);
-  color: white;
-  transition: background-color 0.4s ease-in-out;
+@media (max-width: 600px) {
+  .modalCloseButton {
+    background-color: rgba(88, 57, 46, 0.8);
+  }
 }
