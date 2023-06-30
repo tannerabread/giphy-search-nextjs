@@ -11,14 +11,22 @@ interface ModalProps {
   copyUrl: (e: MouseEvent<HTMLButtonElement>, url: string) => void;
 }
 
-export default function Modal({ activeGif, closeModal, copyUrl }: ModalProps): JSX.Element {
+export default function Modal({
+  activeGif,
+  closeModal,
+  copyUrl,
+}: ModalProps): JSX.Element {
   return (
     <div className={styles.modal} onClick={closeModal}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <button className={styles.modalCloseButton} onClick={closeModal}>
           Close
         </button>
-        <CopyButton url={activeGif.url} onCopy={copyUrl} />
+        <CopyButton
+          isModal
+          url={activeGif.url}
+          onCopy={copyUrl}
+        />
         <video autoPlay loop muted width={500} height={500}>
           <source src={activeGif.url} type="video/mp4" />
           Your browser does not support the video tag.
