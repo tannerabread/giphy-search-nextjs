@@ -2,16 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 
+import { useSearches } from "@/contexts/SearchContext";
 import styles from "@/styles/layout/SearchBar.module.css";
 
-interface SearchBarProps {
+export interface SearchProps {
   onSearch: (value: string) => void;
 }
 
-export default function SearchBar({ onSearch }: SearchBarProps): JSX.Element {
+export default function SearchBar({ onSearch }: SearchProps): JSX.Element {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState<string>("");
   const debouncedSearch = useRef(debounce(onSearch, 500)).current;
+  const { selectedSearch } = useSearches();
 
   useEffect(() => {
     if (typeof router.query.search === "string") {
@@ -22,6 +24,10 @@ export default function SearchBar({ onSearch }: SearchBarProps): JSX.Element {
       debouncedSearch.cancel();
     };
   }, [router.query.search, debouncedSearch]);
+
+  useEffect(() => {
+    setSearchValue(selectedSearch || "");
+  }, [selectedSearch]);
 
   function handleSearchChange(
     event: React.ChangeEvent<HTMLInputElement>

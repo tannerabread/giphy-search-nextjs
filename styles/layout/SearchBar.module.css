@@ -32,6 +32,7 @@
   }
 
   .searchBar:focus {
+    border: 1px solid #00ccff;
     box-shadow: 0 0 10px #00ccff;
   }
 }
