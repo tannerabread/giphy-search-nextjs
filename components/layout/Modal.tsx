@@ -22,11 +22,7 @@ export default function Modal({
         <button className={styles.modalCloseButton} onClick={closeModal}>
           Close
         </button>
-        <CopyButton
-          isModal
-          url={activeGif.url}
-          onCopy={copyUrl}
-        />
+        <CopyButton isModal url={activeGif.url} onCopy={copyUrl} />
         <video autoPlay loop muted width={500} height={500}>
           <source src={activeGif.url} type="video/mp4" />
           Your browser does not support the video tag.
