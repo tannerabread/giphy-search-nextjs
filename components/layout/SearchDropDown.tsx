@@ -29,7 +29,7 @@ export default function SearchDropDown({ onSearch }: SearchProps): JSX.Element {
       onChange={handleSelectionChange}
       value={selectedSearch}
     >
-      <option value="">Home</option>
+      <option value=""></option>
       {searches.map((search) => (
         <option key={search} value={search}>
           {search}
